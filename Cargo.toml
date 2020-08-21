@@ -1,0 +1,20 @@
+[package]
+name = "pcef"
+version = "0.0.1"
+authors = ["Dmitriy Tseyler tseylerd@gmail.com"]
+edition = "2018"
+build = "build.rs"
+
+[build-dependencies]
+cmake = "0.1"
+cc = "1.0"
+path-slash="0.1.1"
+
+[dependencies]
+libc = "0.2.70"
+libloading = "0.5"
+
+[target.'cfg(target_os="macos")'.dependencies]
+core-graphics = "0.19"
+core-text = "15"
+foreign-types = "0.3"
