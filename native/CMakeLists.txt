@@ -26,7 +26,6 @@ set(PCEF_HELPER_SRCS
         process_helper_mac.h
         )
 
-set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/build/install/)
 APPEND_PLATFORM_SOURCES(PCEF_SRCS)
 set(PCEF_LIBRARY_TARGET pcef)
 
