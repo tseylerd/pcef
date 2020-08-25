@@ -2,6 +2,7 @@ use std::ffi::{c_void};
 use std::os::raw::c_char;
 
 #[repr(C)]
+#[derive(Default, Debug)]
 pub struct BrowserRect {
     pub x: i32,
     pub y: i32,
