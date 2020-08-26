@@ -5,10 +5,11 @@
 #include "PCefClient.h"
 
 PCefClient::PCefClient(const void* context,
-                                 BrowserId id,
-                                 PaintFn render,
-                                 RectFn rect) {
-  _handler = new PCefRenderHandler(context, render, rect);
+                       BrowserId id,
+                       PaintFn render,
+                       RectFn rect,
+                       ScreenInfoFn screen_info) {
+  _handler = new PCefRenderHandler(context, render, rect, screen_info);
   _id = id;
 }
 

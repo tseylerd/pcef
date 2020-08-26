@@ -24,9 +24,14 @@ struct BrowserRect {
   int32_t height;
 };
 
+struct ScreenInfo {
+  float scale_factor;
+};
+
 typedef uint64_t BrowserId;
 typedef void (*PaintFn)(const void*, BrowserId, bool, const uint8_t*, int, int);
 typedef BrowserRect (*RectFn)(const void*, BrowserId);
+typedef ScreenInfo (*ScreenInfoFn)(const void*, BrowserId);
 
 namespace time_consts {
   static uint64_t _fps = 30;
@@ -39,6 +44,7 @@ struct LoadInfo {
   BrowserId browser_id;
   const PaintFn paint_fn;
   const RectFn rect_fn;
+  const ScreenInfoFn screen_info_fn;
 };
 
 struct BrowserPaths {
@@ -55,6 +61,7 @@ extern "C" EXPORT_API bool load_url(const LoadInfo& url_info);
 extern "C" EXPORT_API void change_url(BrowserId id, const char* text);
 extern "C" EXPORT_API bool init_browser(const BrowserPaths& configuration);
 extern "C" EXPORT_API void resized(BrowserId id);
+extern "C" EXPORT_API void screen_info_changed(BrowserId id);
 extern "C" EXPORT_API bool stop_browser();
 extern "C" EXPORT_API void close_browser(BrowserId id);
 extern "C" EXPORT_API void run_test_loop();

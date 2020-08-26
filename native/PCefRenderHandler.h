@@ -14,13 +14,15 @@
 
 class PCefRenderHandler : public CefRenderHandler {
  public:
-  explicit PCefRenderHandler(const void* context,PaintFn render, RectFn rect);
+  explicit PCefRenderHandler(const void* context,PaintFn render, RectFn rect,
+                             ScreenInfoFn screen_info);
   void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) OVERRIDE;
   void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, const void *buffer, int width, int height) OVERRIDE;
   bool GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo& screen_info) OVERRIDE;
  private:
   PaintFn _render;
   RectFn _rect;
+  ScreenInfoFn _screen_info;
   const void* _context;
  IMPLEMENT_REFCOUNTING(PCefRenderHandler);
 };

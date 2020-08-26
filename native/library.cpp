@@ -88,7 +88,8 @@ bool load_url(const LoadInfo& url_info) {
   CefRefPtr<CefClient> client(new PCefClient(url_info.context,
                                              url_info.browser_id,
                                              url_info.paint_fn,
-                                             url_info.rect_fn));
+                                             url_info.rect_fn,
+                                             url_info.screen_info_fn));
   CefWindowInfo info;
   info.SetAsWindowless(nullptr);
   CefBrowserSettings browserSettings;
@@ -162,6 +163,14 @@ void resized(BrowserId id) {
   CefRefPtr<CefBrowser> browser = browsers::get_browser(id);
   if (browser) {
     browser->GetHost()->WasResized();
+  }
+}
+
+void screen_info_changed(BrowserId id) {
+  log("Screen info changed...\n");
+  CefRefPtr<CefBrowser> browser = browsers::get_browser(id);
+  if (browser) {
+    browser->GetHost()->NotifyScreenInfoChanged();
   }
 }
 

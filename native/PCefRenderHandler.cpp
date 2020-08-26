@@ -21,13 +21,17 @@ void PCefRenderHandler::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType 
 }
 
 bool PCefRenderHandler::GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo &screen_info) {
-  screen_info.device_scale_factor = 2;
+  const ScreenInfo& info = _screen_info(_context, browsers::get_id(browser));
+  screen_info.device_scale_factor = info.scale_factor;
   return true;
 }
 
 PCefRenderHandler::PCefRenderHandler(const void* context,
-                                               PaintFn render, RectFn rect) {
+                                     PaintFn render, 
+                                     RectFn rect,
+                                     ScreenInfoFn screen_info_fn) {
   this->_render = render;
   this->_rect = rect;
+  this->_screen_info = screen_info_fn;
   this->_context = context;
 }
