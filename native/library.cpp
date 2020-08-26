@@ -1,4 +1,5 @@
 #include <include/cef_app.h>
+#include <include/wrapper/cef_closure_task.h>
 #include <include/wrapper/cef_library_loader.h>
 #include <chrono>
 #include "PCefApp.h"
@@ -14,6 +15,10 @@ void log(const char* message) {
 }
 
 namespace browsers {
+  static std::mutex mut;
+  static std::map<BrowserId, CefRefPtr<CefBrowser>> id_to_browser;
+  static std::map<BrowserId, BrowserId> cef_id_to_id;
+
   void save_browser(BrowserId id, const CefRefPtr<CefBrowser>& browser) {
     auto cef_id = (BrowserId)browser->GetIdentifier();
     id_to_browser[id] = browser;
@@ -21,29 +26,30 @@ namespace browsers {
   }
 
   CefRefPtr<CefBrowser> get_browser(BrowserId id) {
+    std::lock_guard<mutex> guard(mut);
     return id_to_browser[id];
   }
 
   void close_browser(BrowserId id) {
-    log("Closing browser");
+    log("Closing browser...");
+    std::lock_guard<mutex> guard(mut);
     CefRefPtr<CefBrowser> browser = id_to_browser[id];
     if (browser) {
-      log("Browser found");
       mac_util::close_browser(browser);
     }
   }
 
   void load_url(BrowserId id, const char* url) {
+    std::lock_guard<mutex> guard(mut);
     CefRefPtr<CefBrowser> browser = id_to_browser[id];
     if (browser) {
-      std::string to_log = "Browser id: " + std::to_string(id) + ". Setting url " + std::string(url);
-      log(to_log.data());
       browser->GetMainFrame()->LoadURL(url);
     }
   }
 
   void erase_browser(BrowserId id) {
-    log("Erasing browser");
+    log("Erasing browser...");
+    std::lock_guard<mutex> guard(mut);
     CefRefPtr<CefBrowser> browser = id_to_browser[id];
     if (browser) {
       int cef_id = browser->GetIdentifier();
@@ -55,11 +61,25 @@ namespace browsers {
   }
 
   BrowserId get_id(CefRefPtr<CefBrowser>& browser) {
+    std::lock_guard<mutex> guard(mut);
     return cef_id_to_id[browser->GetIdentifier()];
   }
 
   bool is_empty() {
+    std::lock_guard<mutex> guard(mut);
     return id_to_browser.empty();
+  }
+}
+
+namespace state {
+  static bool terminated = false;
+
+  bool is_terminated() {
+    return terminated;
+  }
+
+  void terminate() {
+    terminated = true;
   }
 }
 
@@ -102,6 +122,7 @@ bool init_browser(const BrowserPaths& paths) {
   }
 
   CefSettings settings;
+//  settings.log_severity = LOGSEVERITY_DEBUG;
   std::vector<const std::string> args_vector;
   if (paths.framework_path) {
     args_vector.emplace_back("--framework-dir-path=" +std::string(paths.framework_path));

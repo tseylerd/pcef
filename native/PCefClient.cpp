@@ -25,7 +25,12 @@ void PCefClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 }
 
 bool PCefClient::DoClose(CefRefPtr<CefBrowser> browser) {
-  browsers::erase_browser(_id);
+  log("DoClose");
   _handler = nullptr;
   return false;
+}
+
+void PCefClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
+  log("OnBeforeClose");
+  browsers::erase_browser(_id);
 }

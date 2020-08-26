@@ -16,6 +16,7 @@ class PCefClient : public CefClient, public CefLifeSpanHandler {
   CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() OVERRIDE;
   void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
   bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
+  void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
 
  private:
   CefRefPtr<PCefRenderHandler> _handler;

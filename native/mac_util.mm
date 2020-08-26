@@ -43,7 +43,7 @@ namespace mac_util {
 
   void do_message_loop_work(uint64_t delay_ms) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      if (state::terminated) {
+      if (state::is_terminated()) {
         return;
       }
       if (timer) {
@@ -79,7 +79,7 @@ namespace mac_util {
 
   void close_browser(CefRefPtr<CefBrowser> browser) {
     dispatch_async(dispatch_get_main_queue(), ^{
-       browser->GetHost()->TryCloseBrowser();
+      browser->GetHost()->CloseBrowser(true);
     });
   }
 

@@ -60,9 +60,6 @@ extern "C" EXPORT_API void close_browser(BrowserId id);
 extern "C" EXPORT_API void run_test_loop();
 
 namespace browsers {
-  static std::map<BrowserId, CefRefPtr<CefBrowser>> id_to_browser;
-  static std::map<BrowserId, BrowserId> cef_id_to_id;
-
   CefRefPtr<CefBrowser> get_browser(BrowserId id);
   void close_browser(BrowserId id);
   void load_url(BrowserId id, const char* url);
@@ -73,10 +70,7 @@ namespace browsers {
 }
 
 namespace state {
-  static bool terminated = false;
-
-  void terminate() {
-    terminated = true;
-  }
+  void terminate();
+  bool is_terminated();
 }
 #endif
