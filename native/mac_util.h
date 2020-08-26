@@ -11,7 +11,6 @@ namespace mac_util {
   bool initialize(const CefMainArgs& args,
                   const CefSettings& settings,
                   CefRefPtr<CefApp> client);
-  void close_browser(CefRefPtr<CefBrowser> browser);
   void run_mac_loop();
   void log(const char* message);
 }

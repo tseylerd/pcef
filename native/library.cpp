@@ -20,6 +20,7 @@ namespace browsers {
   static std::map<BrowserId, BrowserId> cef_id_to_id;
 
   void save_browser(BrowserId id, const CefRefPtr<CefBrowser>& browser) {
+    std::lock_guard<mutex> guard(mut);
     auto cef_id = (BrowserId)browser->GetIdentifier();
     id_to_browser[id] = browser;
     cef_id_to_id[cef_id] = id;
@@ -31,11 +32,10 @@ namespace browsers {
   }
 
   void close_browser(BrowserId id) {
-    log("Closing browser...");
     std::lock_guard<mutex> guard(mut);
     CefRefPtr<CefBrowser> browser = id_to_browser[id];
     if (browser) {
-      mac_util::close_browser(browser);
+      browser->GetHost()->CloseBrowser(true);
     }
   }
 

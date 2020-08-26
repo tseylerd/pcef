@@ -77,12 +77,6 @@ namespace mac_util {
     NSLog(@"%@", str);
   }
 
-  void close_browser(CefRefPtr<CefBrowser> browser) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      browser->GetHost()->CloseBrowser(true);
-    });
-  }
-
   bool initialize(const CefMainArgs& args,
                   const CefSettings& settings,
                   CefRefPtr<CefApp> client) {
@@ -102,7 +96,7 @@ namespace mac_util {
 
   void finish() {
     on_main_queue(^{
-      while (!browsers::is_empty()) {
+      for (size_t i = 0; i < 10; i++) {
         CefDoMessageLoopWork();
       }
       CefShutdown();
