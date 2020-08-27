@@ -29,7 +29,7 @@ struct ScreenInfo {
 };
 
 typedef uint64_t BrowserId;
-typedef void (*PaintFn)(const void*, BrowserId, bool, const uint8_t*, int, int);
+typedef void (*PaintFn)(const void*, BrowserId, bool, size_t rects_count, const BrowserRect* dirty_rects, const uint8_t*, int, int);
 typedef BrowserRect (*RectFn)(const void*, BrowserId);
 typedef ScreenInfo (*ScreenInfoFn)(const void*, BrowserId);
 

@@ -2,12 +2,19 @@ use std::ffi::{c_void};
 use std::os::raw::c_char;
 
 pub type BrowserId = u64;
-pub type PaintFn = unsafe extern "C" fn(context: *const c_void, brwsr_id: BrowserId, popup: bool, bytes: *const u8, width: i32, height: i32);
+pub type PaintFn = unsafe extern "C" fn(context: *const c_void,
+                                        brwsr_id: BrowserId,
+                                        popup: bool,
+                                        dirty_count: usize,
+                                        dirty_rects: *const BrowserRect,
+                                        bytes: *const u8,
+                                        width: i32,
+                                        height: i32);
 pub type RectFn = unsafe extern "C" fn(context: *mut c_void, u64) -> BrowserRect;
 pub type ScreenInfoFn = unsafe extern "C" fn(context: *mut c_void, u64) -> ScreenInfo;
 
 #[repr(C)]
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Copy, Clone)]
 pub struct BrowserRect {
     pub x: i32,
     pub y: i32,

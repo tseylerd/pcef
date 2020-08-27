@@ -17,7 +17,17 @@ void PCefRenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect
 void PCefRenderHandler::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, const void *buffer, int width, int height) {
   log("On paint");
   BrowserId client_id = browsers::get_id(browser);
-  _render(_context, client_id, false, (const uint8_t*)buffer, width, height);
+  BrowserRect rects[dirtyRects.size()];
+  for (size_t i = 0; i < dirtyRects.size(); i++) {
+    const CefRect& oneRect = dirtyRects.at(i);
+    rects[i] = {
+        oneRect.x,
+        oneRect.y,
+        oneRect.width,
+        oneRect.height
+    };
+  }
+  _render(_context, client_id, false, dirtyRects.size(), rects, (const uint8_t*)buffer, width, height);
 }
 
 bool PCefRenderHandler::GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo &screen_info) {
