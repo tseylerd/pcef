@@ -13,6 +13,7 @@ class PCefClient : public CefClient, public CefLifeSpanHandler {
  public:
   PCefClient(const void* context, BrowserId id, PaintFn render, RectFn rect,
              ScreenInfoFn screen_info);
+  ~PCefClient();
   CefRefPtr<CefRenderHandler> GetRenderHandler() OVERRIDE;
   CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() OVERRIDE;
   void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;

@@ -13,6 +13,10 @@ PCefClient::PCefClient(const void* context,
   _id = id;
 }
 
+PCefClient::~PCefClient() {
+  _handler = nullptr;
+}
+
 CefRefPtr<CefRenderHandler> PCefClient::GetRenderHandler() {
   return _handler;
 }
@@ -27,7 +31,6 @@ void PCefClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 
 bool PCefClient::DoClose(CefRefPtr<CefBrowser> browser) {
   log("DoClose");
-  _handler = nullptr;
   return false;
 }
 
