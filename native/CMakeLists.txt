@@ -171,3 +171,25 @@ if(OS_MACOSX)
         add_dependencies(${PCEF_LIBRARY_TARGET} "${_helper_target}")
     endforeach()
 endif()
+
+
+if(OS_WINDOWS)
+    # Helper executable target.
+    add_executable(${PCEF_HELPER_TARGET} WIN32 ${PCEF_HELPER_SRCS})
+    SET_EXECUTABLE_TARGET_PROPERTIES(${PCEF_HELPER_TARGET})
+    add_dependencies(${PCEF_HELPER_TARGET} libcef_dll_wrapper)
+    target_link_libraries(${PCEF_HELPER_TARGET} libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+
+    add_library(${PCEF_TARGET} SHARED ${PCEF_SRCS})
+    SET_LIBRARY_TARGET_PROPERTIES(${PCEF_TARGET})
+    add_dependencies(${PCEF_TARGET} libcef_dll_wrapper ${PCEF_HELPER_TARGET})
+    target_link_libraries(${PCEF_TARGET} libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+    target_include_directories(${PCEF_TARGET} PUBLIC)
+
+    ADD_WINDOWS_MANIFEST("${CMAKE_CURRENT_SOURCE_DIR}" "${PCEF_TARGET}" "dll")
+    ADD_WINDOWS_MANIFEST("${CMAKE_CURRENT_SOURCE_DIR}" "${PCEF_HELPER_TARGET}" "exe")
+
+    # Copy binary and resource files to the target output directory.
+    COPY_FILES("${PCEF_TARGET}" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
+    COPY_FILES("${PCEF_TARGET}" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
+endif()
