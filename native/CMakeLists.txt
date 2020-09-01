@@ -36,15 +36,52 @@ APPEND_PLATFORM_SOURCES(PCEF_HELPER_SRCS)
 #
 
 # Target binary names.
+
 if(OS_MACOSX)
     set(PCEF_HELPER_TARGET "pcef_Helper")
     set(PCEF_TEST_HELPER_TARGET "pcef_test_Helper")
     set(PCEF_HELPER_OUTPUT_NAME "pcef Helper")
     set(PCEF_TEST_HELPER_OUTPUT_NAME "pcef_test Helper")
+else()
+    set(PCEF_HELPER_TARGET "pcef_helper")
+endif()
+
+if(OS_LINUX OR OS_WINDOWS)
+    # Logical target used to link the libcef library on Linux and Windows.
+    # On macOS the CEF framework is loaded dynamically at startup.
+    ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
 endif()
 
 # Determine the target output directory.
 SET_CEF_TARGET_OUT_DIR()
+if(OS_LINUX)
+    # Find required libraries and update compiler/linker variables.
+    FIND_LINUX_LIBRARIES("gmodule-2.0 gtk+-2.0 gthread-2.0")
+
+    # Helper executable target.
+    add_executable(${PCEF_HELPER_TARGET} ${PCEF_HELPER_SRCS})
+    SET_EXECUTABLE_TARGET_PROPERTIES(${PCEF_HELPER_TARGET})
+    add_dependencies(${PCEF_HELPER_TARGET} libcef_dll_wrapper)
+    target_link_libraries(${PCEF_HELPER_TARGET} libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+
+    # Set rpath so that libraries can be placed next to the executable.
+    set_target_properties(${PCEF_HELPER_TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN")
+    set_target_properties(${PCEF_HELPER_TARGET} PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
+
+    # PCEF library target.
+    add_library(${PCEF_TARGET} SHARED ${JCEF_SRCS})
+    SET_LIBRARY_TARGET_PROPERTIES(${PCEF_TARGET})
+    add_dependencies(${PCEF_TARGET} libcef_dll_wrapper ${PCEF_HELPER_TARGET})
+    target_link_libraries(${PCEF_TARGET} libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+
+    # Set rpath so that libraries can be placed next to the library.
+    set_target_properties(${PCEF_TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN")
+    set_target_properties(${PCEF_TARGET} PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
+
+    # Copy binary and resource files to the target output directory.
+    COPY_FILES("${PCEF_TARGET}" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
+    COPY_FILES("${PCEF_TARGET}" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
+endif()
 
 #
 # Mac OS X configuration.
