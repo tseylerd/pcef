@@ -2,10 +2,13 @@
 #include <include/wrapper/cef_closure_task.h>
 #include <include/wrapper/cef_library_loader.h>
 #include <chrono>
-#include "PCefApp.h"
 #include "PCefClient.h"
-#include "mac_util.h"
 #include "util.h"
+#import "PCefApp.h"
+
+#if defined(OS_MACOSX)
+#include "mac_util.h"
+#endif
 
 using namespace std;
 
@@ -154,8 +157,12 @@ bool init_browser(const BrowserPaths& paths) {
   settings.windowless_rendering_enabled = true;
   settings.multi_threaded_message_loop = false;
   settings.external_message_pump = 1;
-  CefRefPtr<CefApp> app(new PCefApp());
+#if defined(OS_MACOSX)
+  CefRefPtr<CefApp> app = PCefApp::Create();
   return mac_util::initialize(cefArgs, settings, app);
+#else
+  return CefInitialize(args, settings, app, nullptr);
+#endif
 }
 
 void resized(BrowserId id) {
@@ -177,10 +184,16 @@ void screen_info_changed(BrowserId id) {
 bool stop_browser() {
   log("Stopping browser...\n");
   state::terminate();
+#if defined(OS_MACOSX)
   mac_util::finish();
+#else
+  CefShutdown();
+#endif
   return true;
 }
 
 void run_test_loop() {
+#if defined(OS_MACOSX)
   mac_util::run_mac_loop();
+#endif
 }

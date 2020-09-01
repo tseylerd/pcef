@@ -13,12 +13,16 @@ set(PCEF_SRCS
         PCefClient.h
         PCefApp.h
         PCefApp.cpp
-        mac_util.h
-        mac_util.mm
         util.h
         util.cpp
         PCefRenderHandler.cpp
         PCefRenderHandler.h)
+
+set(PCEF_SRCS_MACOSX
+        mac_util.h
+        mac_util.mm
+        PCefAppMac.h
+        PCefAppMac.mm)
 
 set(PCEF_HELPER_SRCS
         process_helper.cpp

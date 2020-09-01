@@ -6,7 +6,6 @@
 #import <include/internal/cef_types_wrappers.h>
 
 namespace mac_util {
-  void do_message_loop_work(uint64_t delay);
   void finish();
   bool initialize(const CefMainArgs& args,
                   const CefSettings& settings,

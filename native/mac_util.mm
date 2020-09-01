@@ -3,9 +3,7 @@
 // can be found in the LICENSE file.
 
 #import "mac_util.h"
-
 #import <Cocoa/Cocoa.h>
-#import "library.h"
 
 @interface InitializeParams : NSObject {
  @public
@@ -30,8 +28,6 @@
 @end
 
 namespace mac_util {
-  static NSTimer* timer;
-
   void on_main_queue(dispatch_block_t block) {
     if ([NSThread isMainThread]) {
       block();
@@ -39,33 +35,6 @@ namespace mac_util {
     else {
       dispatch_sync(dispatch_get_main_queue(), block);
     }
-  }
-
-  void do_message_loop_work(uint64_t delay_ms) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      if (state::is_terminated()) {
-        return;
-      }
-      if (timer) {
-        [timer invalidate];
-        timer = nil;
-      }
-      if (delay_ms <= 0) {
-        CefDoMessageLoopWork();
-        do_message_loop_work(time_consts::max_loop_delay);
-      }
-      else {
-        double max_delay = (double)delay_ms > time_consts::max_loop_delay ? time_consts::max_loop_delay : delay_ms;
-        timer = [NSTimer scheduledTimerWithTimeInterval:max_delay / 1000
-                                                repeats:YES
-                                                  block:^(NSTimer *t) {
-                                                    [timer invalidate];
-                                                    timer = nil;
-                                                    CefDoMessageLoopWork();
-                                                    do_message_loop_work(time_consts::max_loop_delay);
-                                                  }];
-      }
-    });
   }
 
   void run_mac_loop() {
