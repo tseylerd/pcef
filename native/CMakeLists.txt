@@ -21,8 +21,8 @@ set(PCEF_SRCS
         PCefRenderHandler.h)
 
 set(PCEF_HELPER_SRCS
-        process_helper_mac.cpp
-        process_helper_mac.h
+        process_helper.cpp
+        process_helper.h
         )
 
 APPEND_PLATFORM_SOURCES(PCEF_SRCS)
