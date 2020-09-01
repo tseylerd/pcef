@@ -21,7 +21,6 @@ set(PCEF_SRCS
         PCefRenderHandler.h)
 
 set(PCEF_HELPER_SRCS
-        app_subprocess_impl.cpp
         process_helper_mac.cpp
         process_helper_mac.h
         )
