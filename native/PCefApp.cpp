@@ -13,11 +13,12 @@ CefRefPtr<CefBrowserProcessHandler> PCefApp::GetBrowserProcessHandler() {
 }
 
 void PCefApp::OnScheduleWorkMainThread(int64 delay_ms) {
-  if (IsWorkPending()) {
-    Stop();
-  }
   if (state::is_terminated()) {
     return;
+  }
+
+  if (IsWorkPending()) {
+    Stop();
   }
   if (delay_ms <= 0) {
     DoWork();

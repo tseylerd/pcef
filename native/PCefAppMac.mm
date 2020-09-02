@@ -35,6 +35,9 @@ void PCefAppMac::Schedule(int64_t delay) {
   _timer = [NSTimer scheduledTimerWithTimeInterval:max_delay / 1000
                                           repeats:YES
                                             block:^(NSTimer *t) {
+                                              if (state::is_terminated()) {
+                                                return;
+                                              }
                                               Stop();
                                               DoWork();
                                             }];

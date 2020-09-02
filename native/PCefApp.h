@@ -10,6 +10,7 @@
 class PCefApp : public CefApp, public CefBrowserProcessHandler {
  public:
   PCefApp();
+  ~PCefApp();
   CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() OVERRIDE;
   void OnScheduleMessagePumpWork(int64 delay_ms) OVERRIDE = 0;
 
