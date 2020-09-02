@@ -3,6 +3,7 @@
 #import "library.h"
 
 PCefAppMac::PCefAppMac() {
+  _timer = nil;
 }
 
 void PCefAppMac::OnScheduleMessagePumpWork(int64_t delay_ms) {
@@ -16,7 +17,7 @@ bool PCefAppMac::IsWorkPending() {
 }
 
 void PCefAppMac::Stop() {
-  if (_timer) {
+  if (_timer != nil) {
     [_timer invalidate];
     _timer = nil;
   }
