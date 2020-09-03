@@ -1,6 +1,10 @@
 use std::ffi::{c_void};
 use std::os::raw::c_char;
 
+pub static LEFT_MOUSE_BUTTON: u32 = 1 << 4;
+pub static MIDDLE_MOUSE_BUTTON: u32 = 1 << 5;
+pub static RIGHT_MOUSE_BUTTON: u32 = 1 << 6;
+
 pub type BrowserId = u64;
 pub type PaintFn = unsafe extern "C" fn(context: *const c_void,
                                         brwsr_id: BrowserId,
@@ -12,6 +16,10 @@ pub type PaintFn = unsafe extern "C" fn(context: *const c_void,
                                         height: i32);
 pub type RectFn = unsafe extern "C" fn(context: *mut c_void, u64) -> BrowserRect;
 pub type ScreenInfoFn = unsafe extern "C" fn(context: *mut c_void, u64) -> ScreenInfo;
+
+pub trait MouseEvent {
+    unsafe fn send_me(&self, id: BrowserId);
+}
 
 #[repr(C)]
 #[derive(Default, Debug, Copy, Clone)]
@@ -45,6 +53,58 @@ pub struct LoadInfo {
     pub screen_info_fn: ScreenInfoFn
 }
 
+#[repr(C)]
+pub enum Button {
+    LEFT,
+    RIGHT,
+    MIDDLE
+}
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct MouseInfo {
+    pub x: i32,
+    pub y: i32,
+    pub modifiers: u32
+}
+
+#[repr(C)]
+pub struct MouseClickEvent {
+    pub info: MouseInfo,
+    pub button: Button,
+    pub click_count: i32,
+    pub mouse_up: bool
+}
+
+#[repr(C)]
+pub struct MouseMoveEvent {
+    pub info: MouseInfo,
+    pub leave: bool
+}
+
+#[repr(C)]
+pub struct MouseWheelEvent {
+    pub info: MouseInfo,
+    pub delta_x: i32,
+    pub delta_y: i32
+}
+
+impl MouseEvent for MouseWheelEvent {
+    unsafe fn send_me(&self, id: BrowserId) {
+        send_mouse_wheel_event(id, self);
+    }
+}
+impl MouseEvent for MouseMoveEvent {
+    unsafe fn send_me(&self, id: BrowserId) {
+        send_mouse_move_event(id, self);
+    }
+}
+impl MouseEvent for MouseClickEvent {
+    unsafe fn send_me(&self, id: BrowserId) {
+        send_mouse_click_event(id, self);
+    }
+}
+
 extern {
     pub fn init_browser(paths: &BrowserPaths) -> bool;
 
@@ -59,6 +119,12 @@ extern {
     pub fn screen_info_changed(id: BrowserId);
 
     pub fn close_browser(id: BrowserId);
+
+    pub fn send_mouse_move_event(id: BrowserId, event: &MouseMoveEvent);
+
+    pub fn send_mouse_click_event(id: BrowserId, event: &MouseClickEvent);
+
+    pub fn send_mouse_wheel_event(id: BrowserId, event: &MouseWheelEvent);
 
     pub fn run_test_loop();
 }

@@ -109,6 +109,45 @@ void close_browser(BrowserId id) {
   browsers::close_browser(id);
 }
 
+void send_mouse_move_event(BrowserId id, const MouseMoveEvent& event) {
+  auto browser = browsers::get_browser(id);
+  if (browser) {
+    CefMouseEvent e;
+    e.x = event.info.x;
+    e.y = event.info.y;
+    e.modifiers = event.info.modifiers;
+    browser->GetHost()->SendMouseMoveEvent(e, event.leave);
+  }
+}
+
+void send_mouse_wheel_event(BrowserId id, const MouseWheelEvent& event) {
+  auto browser = browsers::get_browser(id);
+  if (browser) {
+    CefMouseEvent e;
+    e.x = event.info.x;
+    e.y = event.info.y;
+    e.modifiers = event.info.modifiers;
+    browser->GetHost()->SendMouseWheelEvent(e, event.delta_x, event.delta_y);
+  }
+}
+
+void send_mouse_click_event(BrowserId id, const MouseClickEvent& event) {
+  if (event.button == Button::RIGHT) {
+    return;
+  }
+  auto browser = browsers::get_browser(id);
+  if (browser) {
+    CefMouseEvent e;
+    e.x = event.info.x;
+    e.y = event.info.y;
+    e.modifiers = event.info.modifiers;
+    cef_mouse_button_type_t type = event.button == Button::LEFT ? cef_mouse_button_type_t::MBT_LEFT :
+                                   event.button == Button::RIGHT ? cef_mouse_button_type_t::MBT_RIGHT :
+                                   cef_mouse_button_type_t::MBT_MIDDLE;
+    browser->GetHost()->SendMouseClickEvent(e, type, event.mouse_up, event.click_count);
+  }
+}
+
 bool init_browser(const BrowserPaths& paths) {
   if (paths.framework_path) {
     size_t fp_len = strlen(paths.framework_path);

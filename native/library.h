@@ -54,6 +54,39 @@ struct BrowserPaths {
   const char* subprocess_path;
 };
 
+enum Button {
+  LEFT,
+  RIGHT,
+  MIDDLE
+};
+
+struct MouseEventInfo {
+  int32_t x;
+  int32_t y;
+  uint32_t modifiers;
+};
+
+struct MouseClickEvent {
+ public:
+  MouseEventInfo info;
+  Button button;
+  int32_t click_count;
+  bool mouse_up;
+};
+
+struct MouseMoveEvent {
+ public:
+  MouseEventInfo info;
+  bool leave;
+};
+
+struct MouseWheelEvent {
+ public:
+  MouseEventInfo info;
+  int32_t delta_x;
+  int32_t delta_y;
+};
+
 
 void log(const char* message);
 
@@ -64,6 +97,9 @@ extern "C" EXPORT_API void resized(BrowserId id);
 extern "C" EXPORT_API void screen_info_changed(BrowserId id);
 extern "C" EXPORT_API bool stop_browser();
 extern "C" EXPORT_API void close_browser(BrowserId id);
+extern "C" EXPORT_API void send_mouse_click_event(BrowserId id, const MouseClickEvent& event);
+extern "C" EXPORT_API void send_mouse_move_event(BrowserId id, const MouseMoveEvent& event);
+extern "C" EXPORT_API void send_mouse_wheel_event(BrowserId id, const MouseWheelEvent& event);
 extern "C" EXPORT_API void run_test_loop();
 
 namespace browsers {
