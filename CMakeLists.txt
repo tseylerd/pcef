@@ -9,8 +9,7 @@ cmake_minimum_required(VERSION 2.8.12.1)
 # Only generate Debug and Release configuration types.
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
-set(CMAKE_EXE_LINKER_FLAGS "-lc++abi")
+#set(CMAKE_EXE_LINKER_FLAGS "-lc++abi")
 
 # Project name.
 project(pcef)
